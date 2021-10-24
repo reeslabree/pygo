@@ -1,1 +1,1 @@
-# CSCI 4448 Final Project\ # Go
+# CSCI 4448 Final Project - Go
