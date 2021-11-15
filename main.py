@@ -20,10 +20,12 @@ def main():
     window.fill(WHITE)
     
     board = Board(window, GRID_DIMENSION)
+    board.draw_piece(2, 4, 'white')
+    board.draw_piece(1, 5, 'black')
+    board.draw_piece(4, 2, 'black')
+    board.draw_piece(1, 1, 'white')
 
     while True:
-        board.draw_grid(window)
-
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()

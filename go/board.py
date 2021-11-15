@@ -1,5 +1,5 @@
 import pygame
-from go.constants import BLACK, WHITE, WINDOW_DIMENSION
+from go.constants import TILE_B, TILE_W, BLACK, WHITE, WINDOW_DIMENSION
 
 class Board:
     # constructor
@@ -8,11 +8,12 @@ class Board:
         self.white_pieces = []      # tuples of positions of the white pieces
         self.black_pieces = []      # tuples of positions of the black pieces
         self.block_size = WINDOW_DIMENSION // (dimension + 1)
-        self.draw_grid(window)
+        self.win = window
+        self.draw_grid()
 
     # draw the grid
-    def draw_grid(self, window):
-        window.fill(WHITE)
+    def draw_grid(self):
+        self.win.fill(WHITE)
         for x in range( self.block_size, 
                         WINDOW_DIMENSION - (self.block_size), 
                         self.block_size):
@@ -20,7 +21,19 @@ class Board:
                             WINDOW_DIMENSION - (self.block_size), 
                             self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
-                pygame.draw.rect(window, BLACK, rect, 1)
+                pygame.draw.rect(self.win, BLACK, rect, 1)
+
+    # draw a piece
+    def draw_piece(self, x, y, player):
+        if player == 'white':
+            color = TILE_W
+        else:
+            color = TILE_B
+
+        center =   (x * self.block_size + self.block_size, 
+                    y * self.block_size + self.block_size)
+        pygame.draw.circle(self.win, color, center, (self.block_size // 2.25), 0)
+
 '''
     # draw the pieces
     def draw_pieces(block_size):
