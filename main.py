@@ -15,6 +15,11 @@ def main():
     
     board = Board(window, GRID_DIMENSION)
 
+    board.place((313, 241), 'white')
+    board.place((236, 315), 'white')
+    board.place((320, 401), 'white')
+    board.place((403, 318), 'white')
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -23,7 +28,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                board.place(pos, 'white')
+                board.place(pos, 'black')
     
         pygame.display.update()
 
