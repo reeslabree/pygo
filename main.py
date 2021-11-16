@@ -6,13 +6,7 @@ from go.constants import WINDOW_DIMENSION, WHITE, GRID_DIMENSION
 
 pygame.display.set_caption('PyGo')
 
-def row_col(pos, dimension):
-    x, y = pos
-    block_size = WINDOW_DIMENSION // (dimension + 2) 
-    row = y // (block_size + 1)    
-    col = x // (block_size + 1)
-    return row, col
-
+# TODO - move all this to the game function
 def main():
     pygame.init()
     window = pygame.display.set_mode((WINDOW_DIMENSION, WINDOW_DIMENSION))
@@ -20,10 +14,6 @@ def main():
     window.fill(WHITE)
     
     board = Board(window, GRID_DIMENSION)
-    board.draw_piece(2, 4, 'white')
-    board.draw_piece(1, 5, 'black')
-    board.draw_piece(4, 2, 'black')
-    board.draw_piece(1, 1, 'white')
 
     while True:
         for event in pygame.event.get():
@@ -31,6 +21,10 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                board.place(pos, 'white')
+    
         pygame.display.update()
 
 main()
