@@ -24,34 +24,28 @@ class Board:
                 pygame.draw.rect(self.win, BLACK, rect, 1)
 
     # draw a piece
-    def draw_piece(self, x, y, player):
+    def _draw_piece(self, x, y, player):
         if player == 'white':
             color = TILE_W
         else:
             color = TILE_B
 
-        center =   (x * self.block_size + self.block_size, 
-                    y * self.block_size + self.block_size)
+        center =   (x * self.block_size, 
+                    y * self.block_size)
         pygame.draw.circle(self.win, color, center, (self.block_size // 2.25), 0)
 
-'''
-    # draw the pieces
-    def draw_pieces(block_size):
-        for tile in self.white_pieces:
+    def place(self, pos, player):
+        # turn pos on screen into row, col
+        x, y = pos
+        block_size = WINDOW_DIMENSION // (self.dimension + 2) 
+        col = y // (block_size + 1)    
+        row = x // (block_size + 1)
 
-        for     
-
-    # place a piece
-    # pos = tuple <x,y>
-    def place(self, pos):
+        # check if valid placement
 
 
-    # return all valid <x,y> placements for player
-    def _get_liberties(self, player):
+        # if valid placement, draw piece there, add to list of pieces
+        self._draw_piece(row, col, player)
+        
 
-    
-    # check if pieces should be captured and remove them
-    def capture(self):
-    
-'''
-
+        # if not valid, do something
