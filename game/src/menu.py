@@ -11,7 +11,7 @@ from pygame_menu.examples import create_example_window
 #
 
 class Menu:
-    def __init__(self, game):
+    def __init__(self, game: object) -> object:
         self.DISPLAY_W, self.DISPLAY_H = 720, 480
         self.surface = create_example_window('Example - Game Selector', (self.DISPLAY_W, self.DISPLAY_H))
         self.DIFFICULTY = ['EASY']
@@ -25,9 +25,9 @@ class Menu:
                                   self.DIFFICULTY
                                   )
         self.play_menu.add.selector('Select difficulty ',
-                                    [('1 - Easy', 'EASY'),
-                                     ('2 - Medium', 'MEDIUM'),
-                                     ('3 - Hard', 'HARD')],
+                                    [('9x9', 'EASY'),
+                                     ('13x13', 'MEDIUM'),
+                                     ('19x19', 'HARD')],
                                     onchange=self.change_difficulty,
                                     selector_id='select_difficulty')
         self.play_menu.add.button('Return to main menu', pygame_menu.events.BACK)
@@ -45,9 +45,6 @@ class Menu:
         selected, index = value
         print(f'Selected difficulty: "{selected}" ({difficulty}) at index {index}')
         self.DIFFICULTY[0] = difficulty
-
-    def random_color(self) -> Tuple[int, int, int]:
-        return randrange(0, 255), randrange(0, 255), randrange(0, 255)
 
     def main_background(self) -> None:
         self.surface.fill((128, 0, 128))
@@ -68,9 +65,6 @@ class Menu:
         else:
             raise ValueError(f'unknown difficulty {difficulty}')
         f_esc = font.render('Press ESC to open the menu', True, (255, 255, 255))
-
-        # Draw random color and text
-        bg_color = self.random_color()
 
         # Reset main menu and disable
         # You also can set another menu, like a 'pause menu', or just use the same
