@@ -1,23 +1,73 @@
-import pygame
-from board import Board
-from constants import WINDOW_DIMENSION, BLACK
+import pygame, sys
+from .board import Board
+from .constants import FPS, WINDOW_DIMENSION, WHITE
 
 class Game:
-    def __init__(self, dimension):
-        self.board = Board(dimension)
+    def __init__(self, 
+                dimension=9, 
+                starting_player='white', 
+                starting_white=None, 
+                starting_black=None):
+        pygame.init()
+        self.window = pygame.display.set_mode((WINDOW_DIMENSION, WINDOW_DIMENSION))
+        self.clock = pygame.time.Clock()
 
-    # draws the grid on the board
-    def draw_board(self):
-        block_size = WINDOW_DIMENSION // (self.board.dimension + 2)
-        for x in range(block_size, WINDOW_DIMENSION - block_size, block_size):
-            for y in range(block_size, WINDOW_DIMENSION - block_size, block_size):
-                rect = pygame.Rect(x, y, block_size, block_size)
-                pygame.draw.rect(self.screen, BLACK, rect, 1)
+        self.board = Board(self.window, dimension, starting_white, starting_black)
+        self.state = ['update', 'wait']     # queue of events
+        self.player = starting_player
+        self.window.fill(WHITE)
 
-    # update the game blah blah
-    def update(self):
-        self.draw_board(self)
+    def _wait(self):
+        event = pygame.event.poll()
+        if event.type == pygame.QUIT:
+            self.state.append('quit')
+            
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.board.place(pos, self.player) == False:
+                # aler that there was an invalid placement
+                print('invalid placement')  #TODO: make this do a pop up or something
+            else:
+                if self.player == 'white':
+                    self.player = 'black'
+                else:
+                    self.player = 'white'
+            self.state.append('update')
+            self.state.append('check_win')   
+        else:
+            self.state.append('wait')
+        
+    def _update(self): 
+        self.board.update_board()
+        pygame.display.update()
+        self.state.append('wait')
 
-    # attempt to place a tile
-    def place(self, row, col):
-        print('Called Place()')
+    def _check_win(self):
+        winner = self.board.check_win()
+
+        if winner != None:
+            print(winner)
+
+        self.state.append('wait')
+
+    def go(self):
+        self.board.update_board()
+        while True:
+            next_state = self.state.pop(0)
+
+            if next_state == 'wait':
+                self._wait()
+
+            elif next_state == 'update':
+                self._update()
+ 
+            elif next_state == 'check_win':
+                self._check_win()
+
+            elif next_state == 'save':
+                # self.save_game()
+                print('save game')
+
+            elif next_state == 'quit':
+                pygame.quit()
+                break
