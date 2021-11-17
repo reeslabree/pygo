@@ -3,16 +3,23 @@ from go.constants import TILE_B, TILE_W, BLACK, WHITE, WINDOW_DIMENSION
 
 class Board:
     # constructor
-    def __init__(self, window, dimension):
+    def __init__(self, window, dimension, white_start, black_start):
         self.dimension = dimension  # dimension of the board
-        self.white_pieces = []      # tuples of positions of the white pieces
-        self.black_pieces = []      # tuples of positions of the black pieces
+        if white_start == None:
+            self.white_pieces = []  # tuples of positions of the white pieces
+        else:
+            self.white_pieces = white_start
+        if black_start == None:
+            self.black_pieces = []  # tuples of positions of the black pieces
+        else:
+            self.black_pieces = black_start
+
         self.block_size = WINDOW_DIMENSION // (dimension + 1)
         self.win = window
-        self.draw_grid()
+        self._draw_grid()
 
     # draw the grid
-    def draw_grid(self):
+    def _draw_grid(self):
         self.win.fill(WHITE)
         for x in range( self.block_size, 
                         WINDOW_DIMENSION - (self.block_size), 
@@ -34,6 +41,24 @@ class Board:
                     y * self.block_size)
         pygame.draw.circle(self.win, color, center, (self.block_size // 2.25), 0)
 
+    # check if there is a winner
+    # TODO: implement
+    def check_win(self):
+        if False:
+            return 'white'
+        return None
+
+    # clears the board, draw the pieces
+    def update_board(self):
+        self._draw_grid()
+        for (x, y) in self.white_pieces:
+            self._draw_piece(x, y, 'white')
+        for (x, y) in self.black_pieces:
+            self._draw_piece(x, y, 'black')
+
+    # determines if a placement is a valid placement for a player
+    ## returns 'True' if placement is valid
+    ## returns 'False' if the placement is invalid
     def _is_invalid_placement(self, coord, player):
         # if there is a piece there already
         if coord in self.white_pieces + self.black_pieces:
@@ -58,6 +83,9 @@ class Board:
         # doesnt meet any of the above conditions = valid placement
         return True
 
+    # place a piece adds a piece to the board
+    ## returns 'True' if the placement is valid
+    ## returns 'False' if the placement is invalid
     def place(self, pos, player):
         # turn pos on screen into row, col
         x, y = pos
@@ -70,7 +98,6 @@ class Board:
             return False
 
         # if valid placement, draw piece there, add to list of pieces
-        self._draw_piece(row, col, player)
         if player == 'white':
             self.white_pieces.append((row, col))
         else:
