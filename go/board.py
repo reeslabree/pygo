@@ -90,6 +90,11 @@ class Board:
         block_size = WINDOW_DIMENSION // (self.dimension + 2) 
         col = y // (block_size + 1)    
         row = x // (block_size + 1)
+        
+        # check if the x or y coord falls outside of the dimensions of the board
+        if row in [0, self.dimension+1] or col in [0, self.dimension+1]:
+            print('cannot place outside of the board')
+            return False
 
         # check if valid placement, return False
         if not self._is_invalid_placement((row, col), player):
