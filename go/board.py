@@ -81,6 +81,58 @@ class Board:
         # doesnt meet any of the above conditions = valid placement
         return True
 
+    # checks if any pieces should be captured
+    ## returns list of tuples that should be captured
+    def _is_captured(self, player, new_x, new_y):
+        adjacent = []
+        block = [(new_x, new_y)]
+        to_capture = block.copy()
+
+        if player == 'black':
+            jeap = self.black_pieces
+            safe = self.white_pieces
+        else:
+            jeap = self.white_pieces
+            safe = self.black_pieces
+
+        while len(block) > 0:
+            (x, y) = block.pop(0)
+            surrounding = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+            for coord in surrounding:
+                if coord in jeap and coord not in to_capture:
+                    block.append(coord)
+                    to_capture.append(coord)
+                elif coord in jeap:
+                    continue
+                elif coord in safe:
+                    adjacent.append(coord)
+                else:
+                    return None
+        
+        return to_capture
+
+    # check if any of the players pieces should be captured
+    def try_capture(self, player):
+        if player == 'white':
+            copy = self.white_pieces.copy()
+            while len(copy) > 0:
+                try_piece = copy.pop()
+                kill = self._is_captured('white', try_piece[0], try_piece[1])
+                if kill != None:
+                    for piece in kill:
+                        self.white_pieces.remove(piece)
+
+        elif player == 'black':
+            copy = self.black_pieces.copy()
+            while len(copy) > 0:
+                try_piece = copy.pop()
+                kill = self._is_captured('black', try_piece[0], try_piece[1])
+                if kill != None:
+                    for piece in kill:
+                        self.black_pieces.remove(piece)
+
+
+
     # place a piece adds a piece to the board
     ## returns 'True' if the placement is valid
     ## returns 'False' if the placement is invalid
@@ -96,14 +148,18 @@ class Board:
             print('cannot place outside of the board')
             return False
 
-        # check if valid placement, return False
-        if not self._is_invalid_placement((row, col), player):
-            return False
-
-        # if valid placement, draw piece there, add to list of pieces
+        # place piece, draw piece there, add to list of pieces
         if player == 'white':
             self.white_pieces.append((row, col))
         else:
             self.black_pieces.append((row, col))
+       
+        # check if valid placement, if not remove the piece and return False
+        if self._is_captured(player, row, col) != None: 
+            if player == 'white':
+                self.white_pieces.remove((row, col))
+            else:
+                self.black_pieces.remove((row, col))
+            return False
 
         return True

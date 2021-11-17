@@ -32,15 +32,20 @@ class Game:
                     self.player = 'black'
                 else:
                     self.player = 'white'
-            self.state.append('update')
-            self.state.append('check_win')   
+                self.state.append('capture') 
+                self.state.append('update')
+                self.state.append('check_win')
+            self.state.append('wait')
         else:
             self.state.append('wait')
+
+    def _capture(self):
+        self.board.try_capture(self.player)
         
+
     def _update(self): 
         self.board.update_board()
         pygame.display.update()
-        self.state.append('wait')
 
     def _check_win(self):
         winner = self.board.check_win()
@@ -48,13 +53,10 @@ class Game:
         if winner != None:
             print(winner)
 
-        self.state.append('wait')
-
     def go(self):
         self.board.update_board()
         while True:
             next_state = self.state.pop(0)
-
             if next_state == 'wait':
                 self._wait()
 
@@ -63,6 +65,9 @@ class Game:
  
             elif next_state == 'check_win':
                 self._check_win()
+
+            elif next_state == 'capture':
+                self._capture()
 
             elif next_state == 'save':
                 # self.save_game()
