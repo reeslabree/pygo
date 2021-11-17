@@ -4,7 +4,7 @@ from .constants import FPS, WINDOW_DIMENSION, WHITE
 
 class Game:
     def __init__(self, 
-                dimension=13, 
+                dimension=9, 
                 starting_player='white', 
                 starting_white=None, 
                 starting_black=None):
@@ -13,30 +13,30 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.board = Board(self.window, dimension, starting_white, starting_black)
-        self.state = ['wait']
+        self.state = ['update', 'wait']     # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
 
     def _wait(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.state.append('quit')
+        event = pygame.event.poll()
+        if event.type == pygame.QUIT:
+            self.state.append('quit')
             
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if self.board.place(pos, self.player) == False:
-                    # aler that there was an invalid placement
-                    print('invalid placement')  #TODO: make this do a pop up or something
-                else:
-                    if self.player == 'white':
-                        self.player == 'black'
-                    else:
-                        self.player == 'white'
-                self.state.append('update')
-                self.state.append('check_win')   
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.board.place(pos, self.player) == False:
+                # aler that there was an invalid placement
+                print('invalid placement')  #TODO: make this do a pop up or something
             else:
-                self.state.append('wait')
-
+                if self.player == 'white':
+                    self.player = 'black'
+                else:
+                    self.player = 'white'
+            self.state.append('update')
+            self.state.append('check_win')   
+        else:
+            self.state.append('wait')
+        
     def _update(self): 
         self.board.update_board()
         pygame.display.update()
@@ -53,10 +53,7 @@ class Game:
     def go(self):
         self.board.update_board()
         while True:
-            try:
-                next_state = self.state.pop(0)
-            except:
-                continue
+            next_state = self.state.pop(0)
 
             if next_state == 'wait':
                 self._wait()

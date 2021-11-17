@@ -71,14 +71,12 @@ class Board:
         for i, (a, b) in enumerate(surrounding_coords):
             if a<1 or b<1 or a>self.dimension or b>self.dimension:
                 del surrounding_coords[i]
-        if player == 'white':
-            if set(surrounding_coords).issubset(set(self.black_pieces)):
-                print('invalid: surrounded')
-                return False
-        else:
-            if set(surrounding_coords).issubset(set(self.white_pieces)):
-                print('invalid: surrounded')
-                return False
+        if player == 'white' and set(surrounding_coords).issubset(set(self.black_pieces)):
+            print('invalid: surrounded')
+            return False
+        elif player == 'black' and set(surrounding_coords).issubset(set(self.white_pieces)): 
+            print('invalid: surrounded')
+            return False
 
         # doesnt meet any of the above conditions = valid placement
         return True
