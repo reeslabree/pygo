@@ -15,22 +15,28 @@ class Menu:
         self.DISPLAY_W, self.DISPLAY_H = 720, 480
         self.surface = create_example_window('Example - Game Selector', (self.DISPLAY_W, self.DISPLAY_H))
         self.DIFFICULTY = ['EASY']
+        self.player1 = 'Player 1'
+        self.player2 = 'Player 2'
         self.play_menu = pygame_menu.Menu(
             height=self.DISPLAY_H,
             width=self.DISPLAY_W,
             title='Play Menu'
         )
-        self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
-                                  self.display_menu,
-                                  self.DIFFICULTY
-                                  )
         self.play_menu.add.selector('Select difficulty ',
                                     [('9x9', 'EASY'),
                                      ('13x13', 'MEDIUM'),
                                      ('19x19', 'HARD')],
                                     onchange=self.change_difficulty,
                                     selector_id='select_difficulty')
-        self.play_menu.add.button('Return to main menu', pygame_menu.events.BACK)
+        self.player1 =self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
+        self.player2 =self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
+        self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
+                                  self.display_menu,
+                                  self.DIFFICULTY,
+                                  self.player1,
+                                  self.player2
+                                  )
+        self.play_menu.add.button('Return to Main Menu', pygame_menu.events.BACK)
 
         self.main_menu = pygame_menu.Menu(
             height=self.DISPLAY_H * 0.6,
