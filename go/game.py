@@ -12,6 +12,8 @@ class Game:
         self.window = pygame.display.set_mode((WINDOW_DIMENSION, WINDOW_DIMENSION))
         self.clock = pygame.time.Clock()
 
+        self.white_score = 0
+        self.black_score = 0
         self.board = Board(self.window, dimension, starting_white, starting_black)
         self.state = ['update', 'wait']     # queue of events
         self.player = starting_player
@@ -40,8 +42,11 @@ class Game:
             self.state.append('wait')
 
     def _capture(self):
-        self.board.try_capture(self.player)
-        
+        score = self.board.try_capture(self.player)
+        if self.player == 'white':
+            self.black_score += score
+        else:
+            self.white_score += score
 
     def _update(self): 
         self.board.update_board()

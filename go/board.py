@@ -113,6 +113,7 @@ class Board:
 
     # check if any of the players pieces should be captured
     def try_capture(self, player):
+        score = 0
         if player == 'white':
             copy = self.white_pieces.copy()
             while len(copy) > 0:
@@ -121,6 +122,7 @@ class Board:
                 if kill != None:
                     for piece in kill:
                         self.white_pieces.remove(piece)
+                score += len(kill)
 
         elif player == 'black':
             copy = self.black_pieces.copy()
@@ -130,8 +132,9 @@ class Board:
                 if kill != None:
                     for piece in kill:
                         self.black_pieces.remove(piece)
-
-
+                score += len(kill)
+    
+        return score
 
     # place a piece adds a piece to the board
     ## returns 'True' if the placement is valid
