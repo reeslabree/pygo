@@ -1,5 +1,5 @@
 import pygame
-from go.constants import TILE_B, TILE_W, BLACK, WHITE, WINDOW_DIMENSION
+from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
 
 class Board:
     # constructor
@@ -14,7 +14,7 @@ class Board:
         else:
             self.black_pieces = black_start
 
-        self.block_size = WINDOW_DIMENSION // (dimension + 1)
+        self.block_size = WIN_DIM_Y // (dimension + 1)
         self.win = window
         self._draw_grid()
 
@@ -22,10 +22,10 @@ class Board:
     def _draw_grid(self):
         self.win.fill(WHITE)
         for x in range( self.block_size, 
-                        WINDOW_DIMENSION - (self.block_size), 
+                        WIN_DIM_Y - (self.block_size), 
                         self.block_size):
             for y in range( self.block_size, 
-                            WINDOW_DIMENSION - (self.block_size), 
+                            WIN_DIM_Y - (self.block_size), 
                             self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 pygame.draw.rect(self.win, BLACK, rect, 1)
@@ -59,23 +59,10 @@ class Board:
     # determines if a placement is a valid placement for a player
     ## returns 'True' if placement is valid
     ## returns 'False' if the placement is invalid
-    def _is_invalid_placement(self, coord, player):
+    def _is_invalid_placement(self, coord):
         # if there is a piece there already
         if coord in self.white_pieces + self.black_pieces:
             print('invalid: already placed')
-            return False
-
-        # if placement is surrounded by other player
-        x, y = coord
-        surrounding_coords = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
-        for i, (a, b) in enumerate(surrounding_coords):
-            if a<1 or b<1 or a>self.dimension or b>self.dimension:
-                del surrounding_coords[i]
-        if player == 'white' and set(surrounding_coords).issubset(set(self.black_pieces)):
-            print('invalid: surrounded')
-            return False
-        elif player == 'black' and set(surrounding_coords).issubset(set(self.white_pieces)): 
-            print('invalid: surrounded')
             return False
 
         # doesnt meet any of the above conditions = valid placement
@@ -122,7 +109,7 @@ class Board:
                 if kill != None:
                     for piece in kill:
                         self.white_pieces.remove(piece)
-                score += len(kill)
+                    score += len(kill)
 
         elif player == 'black':
             copy = self.black_pieces.copy()
@@ -132,7 +119,7 @@ class Board:
                 if kill != None:
                     for piece in kill:
                         self.black_pieces.remove(piece)
-                score += len(kill)
+                    score += len(kill)
     
         return score
 
@@ -142,13 +129,16 @@ class Board:
     def place(self, pos, player):
         # turn pos on screen into row, col
         x, y = pos
-        block_size = WINDOW_DIMENSION // (self.dimension + 2) 
-        col = y // (block_size + 1)    
-        row = x // (block_size + 1)
-        
+        col = (y + 0.5*self.block_size) // self.block_size
+        row = (x + 0.5*self.block_size) // self.block_size
+ 
         # check if the x or y coord falls outside of the dimensions of the board
-        if row in [0, self.dimension+1] or col in [0, self.dimension+1]:
+        if row<1 or row>self.dimension+1 or col<1 or col>self.dimension+1:
             print('cannot place outside of the board')
+            return False
+
+        # check if there is already a piece there
+        if self._is_invalid_placement((row, col)) == False:
             return False
 
         # place piece, draw piece there, add to list of pieces
@@ -156,7 +146,7 @@ class Board:
             self.white_pieces.append((row, col))
         else:
             self.black_pieces.append((row, col))
-       
+      
         # check if valid placement, if not remove the piece and return False
         if self._is_captured(player, row, col) != None: 
             if player == 'white':

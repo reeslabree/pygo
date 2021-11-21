@@ -1,5 +1,6 @@
 GRID_DIMENSION = 9  # TODO: delete me and replace with user ipt
-WINDOW_DIMENSION = 1500
+WIN_DIM_X = 1500
+WIN_DIM_Y = 900
 FPS = 60
 
 # colors

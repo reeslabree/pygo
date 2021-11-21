@@ -1,6 +1,6 @@
 import pygame, sys
 from .board import Board
-from .constants import FPS, WINDOW_DIMENSION, WHITE
+from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
 
 class Game:
     def __init__(self, 
@@ -9,7 +9,7 @@ class Game:
                 starting_white=None, 
                 starting_black=None):
         pygame.init()
-        self.window = pygame.display.set_mode((WINDOW_DIMENSION, WINDOW_DIMENSION))
+        self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
 
         self.white_score = 0
