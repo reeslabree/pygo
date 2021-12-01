@@ -5,7 +5,7 @@ from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
 class Game:
     def __init__(self, 
                 dimension=9, 
-                starting_player='white', 
+                starting_player='black', 
                 starting_white=None, 
                 starting_black=None):
         pygame.init()

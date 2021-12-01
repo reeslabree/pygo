@@ -85,7 +85,11 @@ class Board:
         while len(block) > 0:
             (x, y) = block.pop(0)
             surrounding = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+            
             for coord in surrounding:
+                if coord[0] <1 or coord[0]>self.dimension or coord[1]<1 or coord[1]>self.dimension:
+                    continue
+
                 if coord in jeap and coord not in to_capture:
                     block.append(coord)
                     to_capture.append(coord)
@@ -95,7 +99,7 @@ class Board:
                     adjacent.append(coord)
                 else:
                     return None
-        
+     
         return to_capture
 
     # check if any of the players pieces should be captured
