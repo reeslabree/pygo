@@ -137,7 +137,7 @@ class Board:
         row = (x + 0.5*self.block_size) // self.block_size
  
         # check if the x or y coord falls outside of the dimensions of the board
-        if row<1 or row>self.dimension+1 or col<1 or col>self.dimension+1:
+        if row<1 or row>self.dimension or col<1 or col>self.dimension:
             print('cannot place outside of the board')
             return False
 
