@@ -1,7 +1,6 @@
 import pygame
 import pygame_menu
-from random import randrange
-from typing import Tuple, Any, Optional, List
+from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
 
 
@@ -11,7 +10,7 @@ from pygame_menu.examples import create_example_window
 #
 
 class Menu:
-    def __init__(self, game: object) -> object:
+    def __init__(self, game: object) -> None:
         self.DISPLAY_W, self.DISPLAY_H = 720, 480
         self.surface = create_example_window('Example - Game Selector', (self.DISPLAY_W, self.DISPLAY_H))
         self.DIFFICULTY = ['EASY']
@@ -28,8 +27,8 @@ class Menu:
                                      ('19x19', 'HARD')],
                                     onchange=self.change_difficulty,
                                     selector_id='select_difficulty')
-        self.player1 =self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
-        self.player2 =self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
+        self.player1 = self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
+        self.player2 = self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
         self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
                                   self.display_menu,
                                   self.DIFFICULTY,

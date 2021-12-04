@@ -1,8 +1,8 @@
 import pygame
-from menu import *
+from go.menu import Menu
 
 
-class Game:
+class StartGame:
     def __init__(self) -> object:
         pygame.init()
         self.running, self.playing = True, False
@@ -10,7 +10,6 @@ class Game:
         self.DISPLAY_W, self.DISPLAY_H = 720, 480
         self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W, self.DISPLAY_H)))
-        self.font_name = 'src/8-BIT WONDER.TTF'
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.menu = Menu(self)
         # self.options = OptionsMenu(self)  #TODO
@@ -22,14 +21,13 @@ class Game:
     #
     def game_loop(self) -> None:
         while True:
-
             # Set Background Color
             self.menu.main_background()
-
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
                     exit()
+
 
             # Main Menu
             if self.menu.main_menu.is_enabled():
