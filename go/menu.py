@@ -32,9 +32,9 @@ class Menu:
         self.player2 = self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
         self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
                                   self.start_the_game,
-                                  #self.DIFFICULTY,
-                                  #self.player1,
-                                  #self.player2
+                                  # self.DIFFICULTY,
+                                  # self.player1,
+                                  # self.player2
                                   )
         self.play_menu.add.button('Return to Main Menu', pygame_menu.events.BACK)
 
@@ -90,7 +90,5 @@ class Menu:
         else:
             raise ValueError(f'unknown difficulty {diff}')
 
-        self.main_menu.disable()
-        self.main_menu.full_reset()
         Game(d, 'black', None, None).go()
 
