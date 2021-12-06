@@ -94,5 +94,5 @@ class Game:
                 print('save game')
 
             elif next_state == 'quit':
-                pygame.quit()
+                exit()
                 break
