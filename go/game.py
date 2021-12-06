@@ -4,12 +4,13 @@ from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
 from .button import Button
 
+
 class Game:
-    def __init__(self, 
-                dimension=9, 
-                starting_player='black', 
-                starting_white=None, 
-                starting_black=None):
+    def __init__(self,
+                 dimension,
+                 starting_player,
+                 starting_white,
+                 starting_black) -> object:
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
@@ -17,7 +18,7 @@ class Game:
         self.white_score = 0
         self.black_score = 0
         self.board = Board(self.window, dimension, starting_white, starting_black)
-        self.state = ['update', 'wait']     # queue of events
+        self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
 
@@ -25,7 +26,7 @@ class Game:
         event = pygame.event.poll()
         if event.type == pygame.QUIT:
             self.state.append('quit')
-            
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             click = self.board.check_button_click(pos)
@@ -43,7 +44,7 @@ class Game:
                     print('save')
             elif self.board.place(pos, self.player) == False:
                 # aler that there was an invalid placement
-                print('invalid placement')  #TODO: make this do a pop up or something
+                print('invalid placement')  # TODO: make this do a pop up or something
             else:
                 if self.player == 'white':
                     self.player = 'black'
@@ -63,7 +64,7 @@ class Game:
         else:
             self.white_score += score
 
-    def _update(self): 
+    def _update(self):
         self.board.update_board()
         pygame.display.update()
     def _check_win(self):
@@ -81,7 +82,7 @@ class Game:
 
             elif next_state == 'update':
                 self._update()
- 
+
             elif next_state == 'check_win':
                 self._check_win()
 

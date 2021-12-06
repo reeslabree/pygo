@@ -1,10 +1,7 @@
-import pygame
-from go.game import Game
+import go.start
+import go.menu
 
-pygame.display.set_caption('PyGo')
+g = go.start.StartGame()
 
-def main():
-    game = Game()
-    game.go()
-
-main()
+while g.running:
+    g.game_loop()
