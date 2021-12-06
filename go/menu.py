@@ -2,6 +2,7 @@ import pygame
 import pygame_menu
 from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
+from .game import *
 
 
 # CODE USED FOR EXAMPLE MENU TO GET STARTED:
@@ -30,10 +31,10 @@ class Menu:
         self.player1 = self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
         self.player2 = self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
         self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
-                                  self.display_menu,
-                                  self.DIFFICULTY,
-                                  self.player1,
-                                  self.player2
+                                  self.start_the_game,
+                                  #self.DIFFICULTY,
+                                  #self.player1,
+                                  #self.player2
                                   )
         self.play_menu.add.button('Return to Main Menu', pygame_menu.events.BACK)
 
@@ -76,3 +77,20 @@ class Menu:
         # main_menu as the menu that will check all your input.
         self.main_menu.disable()
         self.main_menu.full_reset()
+
+    def start_the_game(self) -> None:
+        diff = self.DIFFICULTY[0]
+
+        if diff == 'EASY':
+            d = 9
+        elif diff == 'MEDIUM':
+            d = 13
+        elif diff == 'HARD':
+            d = 19
+        else:
+            raise ValueError(f'unknown difficulty {diff}')
+
+        self.main_menu.disable()
+        self.main_menu.full_reset()
+        Game(d, 'black', None, None).go()
+
