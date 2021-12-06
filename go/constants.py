@@ -8,3 +8,9 @@ BLACK = (0, 0, 0)
 WHITE = (214, 214, 214)
 TILE_W = (252, 250, 225)
 TILE_B = (51, 49, 33)
+
+# button presses
+BUTTON_NULL     = 0
+BUTTON_PASS     = 1
+BUTTON_RESIGN   = 2
+BUTTON_SAVE     = 3
