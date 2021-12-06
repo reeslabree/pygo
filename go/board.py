@@ -1,5 +1,7 @@
 import pygame
 from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
+from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
+from .button import Button
 
 class Board:
     # constructor
@@ -16,7 +18,27 @@ class Board:
 
         self.block_size = WIN_DIM_Y // (dimension + 1)
         self.win = window
+
+        pos_pass = ((WIN_DIM_X - 400), ((4.375*WIN_DIM_Y / 8)))
+        self.button_pass = Button('Pass', pos_pass, self.win, 100, bg='white', feedback='pass')
+
+        pos_resign = ((WIN_DIM_X - 400), (5.375*(WIN_DIM_Y / 8)))
+        self.button_resign = Button('Resign', pos_resign, self.win, 100, bg='white', feedback='resign')
+
+        pos_save = ((WIN_DIM_X - 400), (6.375*(WIN_DIM_Y / 8)))
+        self.button_save = Button('Save', pos_save, self.win, 100, bg='white', feedback='save')
+
         self._draw_grid()
+
+    def check_button_click(self, pos):
+        if self.button_pass.click(pos) == True:
+            return BUTTON_PASS
+        elif self.button_resign.click(pos) == True:
+            return BUTTON_RESIGN
+        elif self.button_save.click(pos) == True:
+            return BUTTON_SAVE
+        else:
+            return BUTTON_NULL
 
     # draw the grid
     def _draw_grid(self):
@@ -29,6 +51,9 @@ class Board:
                             self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 pygame.draw.rect(self.win, BLACK, rect, 1)
+        self.button_pass.show()
+        self.button_resign.show()
+        self.button_save.show()
 
     # draw a piece
     def _draw_piece(self, x, y, player):

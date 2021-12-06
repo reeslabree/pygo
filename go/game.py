@@ -1,6 +1,8 @@
 import pygame, sys
 from .board import Board
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
+from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
+from .button import Button
 
 
 class Game:
@@ -27,17 +29,30 @@ class Game:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if self.board.place(pos, self.player) == False:
-                # alert that there was an invalid placement
+            click = self.board.check_button_click(pos)
+            if click != BUTTON_NULL:
+                if click == BUTTON_PASS:
+                    print('pass')
+                    if self.player == 'black':
+                        self.player = 'white'
+                    else:
+                        self.player = 'black'
+                elif click == BUTTON_RESIGN:
+                    print('resign')
+                    self.state.append('quit')
+                elif click == BUTTON_SAVE:
+                    print('save')
+            elif self.board.place(pos, self.player) == False:
+                # aler that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
             else:
                 if self.player == 'white':
                     self.player = 'black'
                 else:
                     self.player = 'white'
-                self.state.append('capture')
-                self.state.append('update')
-                self.state.append('check_win')
+                self.state.append('capture') 
+            self.state.append('update')
+            self.state.append('check_win')
             self.state.append('wait')
         else:
             self.state.append('wait')
@@ -52,7 +67,6 @@ class Game:
     def _update(self):
         self.board.update_board()
         pygame.display.update()
-
     def _check_win(self):
         winner = self.board.check_win()
 
