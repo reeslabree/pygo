@@ -28,7 +28,7 @@ class Game:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.board.place(pos, self.player) == False:
-                # aler that there was an invalid placement
+                # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
             else:
                 if self.player == 'white':
@@ -80,5 +80,5 @@ class Game:
                 print('save game')
 
             elif next_state == 'quit':
-                pygame.quit()
+                exit()
                 break
