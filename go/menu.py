@@ -3,7 +3,7 @@ import pygame_menu
 from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
 from .game import *
-
+from .constants import WIN_DIM_X, WIN_DIM_Y
 
 # CODE USED FOR EXAMPLE MENU TO GET STARTED:
 # https://github.com/ppizarror/pygame-menu/blob/master/pygame_menu/examples/game_selector.py
@@ -12,7 +12,7 @@ from .game import *
 
 class Menu:
     def __init__(self, game: object) -> None:
-        self.DISPLAY_W, self.DISPLAY_H = 720, 480
+        self.DISPLAY_W, self.DISPLAY_H = WIN_DIM_X, WIN_DIM_Y
         self.surface = create_example_window('Example - Game Selector', (self.DISPLAY_W, self.DISPLAY_H))
         self.DIFFICULTY = ['EASY']
         self.player1 = 'Player 1'

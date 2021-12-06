@@ -1,4 +1,5 @@
 import pygame
+from go.constants import WIN_DIM_X, WIN_DIM_Y 
 from go.menu import Menu
 
 
@@ -7,7 +8,7 @@ class StartGame:
         pygame.init()
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
-        self.DISPLAY_W, self.DISPLAY_H = 720, 480
+        self.DISPLAY_W, self.DISPLAY_H = WIN_DIM_X, WIN_DIM_Y
         self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W, self.DISPLAY_H)))
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
