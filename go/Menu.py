@@ -2,7 +2,7 @@ import pygame
 import pygame_menu
 from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
-from .game import *
+from .Game import *
 from .constants import WIN_DIM_X, WIN_DIM_Y
 
 # CODE USED FOR EXAMPLE MENU TO GET STARTED:

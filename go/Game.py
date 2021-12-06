@@ -1,8 +1,8 @@
 import pygame, sys
-from .board import Board
+from .Board import Board
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
-from .button import Button
+from .Button import Button
 
 
 class Game:

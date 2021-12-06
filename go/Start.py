@@ -1,6 +1,6 @@
 import pygame
 from go.constants import WIN_DIM_X, WIN_DIM_Y 
-from go.menu import Menu
+from go.Menu import Menu
 
 
 class StartGame:

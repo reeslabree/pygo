@@ -1,7 +1,7 @@
-import go.start
-import go.menu
+import go.Start
+import go.Menu
 
-g = go.start.StartGame()
+g = go.Start.StartGame()
 
 while g.running:
     g.game_loop()

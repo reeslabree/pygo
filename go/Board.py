@@ -1,7 +1,7 @@
 import pygame
 from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
 from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
-from .button import Button
+from .Button import Button
 
 class Board:
     # constructor
