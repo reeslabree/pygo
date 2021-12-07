@@ -1,6 +1,6 @@
 import pygame
 from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
-from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
+from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .Button import Button
 
 class Board:
@@ -28,15 +28,20 @@ class Board:
         pos_save = ((WIN_DIM_X - 400), (6.375*(WIN_DIM_Y / 8)))
         self.button_save = Button('Save', pos_save, self.win, 100, bg='white', feedback='save')
 
+        pos_undo = ((WIN_DIM_X - 400), (3.375*(WIN_DIM_Y / 8)))
+        self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
+
         self._draw_grid()
 
     def check_button_click(self, pos):
-        if self.button_pass.click(pos) == True:
+        if self.button_pass.click(pos):
             return BUTTON_PASS
-        elif self.button_resign.click(pos) == True:
+        elif self.button_resign.click(pos):
             return BUTTON_RESIGN
-        elif self.button_save.click(pos) == True:
+        elif self.button_save.click(pos):
             return BUTTON_SAVE
+        elif self.button_undo.click(pos):
+            return BUTTON_UNDO
         else:
             return BUTTON_NULL
 
@@ -54,6 +59,7 @@ class Board:
         self.button_pass.show()
         self.button_resign.show()
         self.button_save.show()
+        self.button_undo.show()
 
     # draw a piece
     def _draw_piece(self, x, y, player):
