@@ -1,4 +1,5 @@
 import pygame, sys, copy
+import time
 from copy import deepcopy
 from .Board import Board
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
@@ -17,6 +18,8 @@ class Game:
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
+
+        self.pass_flag = False
 
         self.white_score = 0
         self.black_score = 0
@@ -57,6 +60,10 @@ class Game:
             if click != BUTTON_NULL:
                 if click == BUTTON_PASS:
                     print('pass')
+                    if self.pass_flag:
+                        self.state = ['end', 'wait'] 
+                    else:
+                        self.pass_flag = True
                     if self.player == 'black':
                         self.player = 'white'
                     else:
@@ -80,15 +87,17 @@ class Game:
                 # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
 
-            else:   # valid token placement
+            else:
+                # valid token placement
+                self.pass_flag = False
                 if self.player == 'white':
                     self.player = 'black'
                 else:
                     self.player = 'white'
                 self.state.append('capture')
-                self.state.append('update')
                 self.state.append('check_win')
-
+                self.state.append('update')
+                
             self.state.append('wait')
 
         else:
@@ -108,11 +117,8 @@ class Game:
         self.board.update_board(self.white_score, self.black_score)
         pygame.display.update()
 
-    def _check_win(self):
-        winner = self.board.check_win()
-
-        if winner != None:
-            print(winner)
+    def _score(self):
+        self.black_score, self.white_score = self.board.score_game()
 
     def _save_mem(self):
         self.caretaker.backup()
@@ -139,6 +145,22 @@ class Game:
         self.caretaker.show_history()
         self.caretaker.write_file()
 
+    def _display_winner(self):
+        print('displaying winner')
+        if self.white_score > self.black_score:
+            text = 'White Wins'
+        elif self.black_score > self.white_score:
+            text = 'Black Wins'
+        else:
+            text = 'Draw'
+
+        self.window.fill(WHITE)
+        font = pygame.font.SysFont('Arial', 150)
+        text_surface = font.render(text, False, (0,0,0))
+        center = (WIN_DIM_X // 5, WIN_DIM_Y // 5)
+        self.window.blit(text_surface, center)
+        pygame.display.update()
+
     def go(self):
         self.board.update_board(self.white_score, self.black_score)
         while True:
@@ -150,7 +172,7 @@ class Game:
                 self._update()
 
             elif next_state == 'check_win':
-                self._check_win()
+                self._score()
 
             elif next_state == 'capture':
                 self._capture()
@@ -165,6 +187,9 @@ class Game:
             elif next_state == 'undo':
                 self._undo()
 
+            elif next_state == 'end':
+                self._display_winner()
+            
             elif next_state == 'quit':
                 exit()
                 break

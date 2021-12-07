@@ -88,11 +88,9 @@ class Board:
         pygame.draw.circle(self.win, color, center, (self.block_size // 2.25), 0)
 
     # check if there is a winner
-    # TODO: implement
-    def check_win(self):
-        if False:
-            return 'white'
-        return None
+    def score_game(self):
+        return len(self.black_pieces), len(self.white_pieces)
+
 
     # clears the board, draw the pieces
     def update_board(self, white, black):
