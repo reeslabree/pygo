@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from random import sample
 from string import ascii_letters, digits
+import pickle
+from copy import deepcopy
 
 class Originator():
     _state_ = None
@@ -86,3 +88,12 @@ class Caretaker():
         for memento in self._mementos:
             print(memento.get_name())
             print(memento._state)
+
+    def write_file(self, filename='.savefile') -> None:
+        with open(filename, 'wb') as handle:
+            pickle.dump(self._mementos[len(self._mementos) - 1], handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def read_file(self, filename='.savefile') -> None:
+        with open(filename, 'rb') as handle:
+            self._mementos = [pickle.load(handle)]
+        #self._mementos = [deepcopy(data)]

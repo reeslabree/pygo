@@ -11,7 +11,9 @@ class Game:
                  dimension,
                  starting_player,
                  starting_white,
-                 starting_black) -> object:
+                 starting_black,
+                 should_load=False) -> object:
+ 
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
@@ -26,7 +28,11 @@ class Game:
         # memento implementation
         self.originator = Originator(self._get_memento_state())
         self.caretaker = Caretaker(self.originator)
-        self.caretaker.backup()
+        if not should_load:
+            self.caretaker.backup()
+        else:
+            self.caretaker.read_file()
+            self.state.append('undo')
 
     # gathers the current status of the Game object and packs into a dictionary
     # this dictionary serves as a 'memento state', not to be confused with a 'state machine state'
@@ -59,7 +65,8 @@ class Game:
                     print('resign')
                     self.state.append('quit')
                 elif click == BUTTON_SAVE:
-                    print('save')
+                    self.state.append('save')
+                    self.state.append('wait')
                 elif click == BUTTON_UNDO:
                     self.state.append('undo')
                     self.state.append('wait')
@@ -128,6 +135,10 @@ class Game:
         
         self.state.insert(0, 'update')
     
+    def _save_game(self):
+        self.caretaker.show_history()
+        self.caretaker.write_file()
+
     def go(self):
         self.board.update_board()
         while True:
@@ -145,7 +156,7 @@ class Game:
                 self._capture()
 
             elif next_state == 'save':
-                # self.save_game()
+                self._save_game()
                 print('save game')
 
             elif next_state == 'save_mem':

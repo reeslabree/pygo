@@ -45,7 +45,9 @@ class Menu:
             theme=pygame_menu.themes.THEME_DEFAULT.copy()
         )
         self.main_menu.add.button('Play', self.play_menu)
+        self.main_menu.add.button('Load', self.load_the_game)
         self.main_menu.add.button('Quit', pygame_menu.events.EXIT)
+
 
     def change_difficulty(self, value: Tuple[Any, int], difficulty: str) -> None:
         selected, index = value
@@ -77,6 +79,9 @@ class Menu:
         # main_menu as the menu that will check all your input.
         self.main_menu.disable()
         self.main_menu.full_reset()
+
+    def load_the_game(self) -> None:
+        Game(9, 'black', None, None, should_load=True).go()
 
     def start_the_game(self) -> None:
         diff = self.DIFFICULTY[0]
