@@ -31,6 +31,8 @@ class Board:
         pos_undo = ((WIN_DIM_X - 400), (3.375*(WIN_DIM_Y / 8)))
         self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
 
+
+
         self._draw_grid()
 
     def get_board(self):
@@ -61,11 +63,11 @@ class Board:
     # draw the grid
     def _draw_grid(self):
         self.win.fill(WHITE)
-        for x in range( self.block_size, 
-                        WIN_DIM_Y - (self.block_size), 
+        for x in range( self.block_size,
+                        WIN_DIM_Y - (self.block_size),
                         self.block_size):
-            for y in range( self.block_size, 
-                            WIN_DIM_Y - (self.block_size), 
+            for y in range( self.block_size,
+                            WIN_DIM_Y - (self.block_size),
                             self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 pygame.draw.rect(self.win, BLACK, rect, 1)
@@ -81,7 +83,7 @@ class Board:
         else:
             color = TILE_B
 
-        center =   (x * self.block_size, 
+        center =   (x * self.block_size,
                     y * self.block_size)
         pygame.draw.circle(self.win, color, center, (self.block_size // 2.25), 0)
 
@@ -93,8 +95,9 @@ class Board:
         return None
 
     # clears the board, draw the pieces
-    def update_board(self):
+    def update_board(self, white, black):
         self._draw_grid()
+        self._show_score(1200,10,white, black)
         for (x, y) in self.white_pieces:
             self._draw_piece(x, y, 'white')
         for (x, y) in self.black_pieces:
@@ -129,7 +132,7 @@ class Board:
         while len(block) > 0:
             (x, y) = block.pop(0)
             surrounding = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
-            
+
             for coord in surrounding:
                 if coord[0] <1 or coord[0]>self.dimension or coord[1]<1 or coord[1]>self.dimension:
                     continue
@@ -143,7 +146,7 @@ class Board:
                     adjacent.append(coord)
                 else:
                     return None
-     
+
         return to_capture
 
     # check if any of the players pieces should be captured
@@ -168,7 +171,7 @@ class Board:
                     for piece in kill:
                         self.black_pieces.remove(piece)
                     score += len(kill)
-    
+
         return score
 
     # place a piece adds a piece to the board
@@ -179,7 +182,7 @@ class Board:
         x, y = pos
         col = (y + 0.5*self.block_size) // self.block_size
         row = (x + 0.5*self.block_size) // self.block_size
- 
+
         # check if the x or y coord falls outside of the dimensions of the board
         if row<1 or row>self.dimension or col<1 or col>self.dimension:
             print('cannot place outside of the board')
@@ -194,9 +197,9 @@ class Board:
             self.white_pieces.append((row, col))
         else:
             self.black_pieces.append((row, col))
-      
+
         # check if valid placement, if not remove the piece and return False
-        if self._is_captured(player, row, col) != None: 
+        if self._is_captured(player, row, col) != None:
             if player == 'white':
                 self.white_pieces.remove((row, col))
             else:
@@ -204,3 +207,13 @@ class Board:
             return False
 
         return True
+
+    def _show_score(self, x, y, white , black):
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        score = font.render("Score :", True, (0,0,0))
+        w = font.render("white: " + str(white), True, (0,0,0))
+        b = font.render("black: " + str(black), True, (0,0,0))
+        screen = self.win
+        screen.blit(score, (x,y))
+        screen.blit(w, (x,y+32))
+        screen.blit(b, (x,y+64))
