@@ -13,7 +13,7 @@ class Game:
                  starting_white,
                  starting_black,
                  should_load=False) -> object:
- 
+
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
@@ -76,21 +76,21 @@ class Game:
             if self.board.place(pos, self.player) == False:
                 #if fail, pop the backup
                 self.caretaker.undo()
-                
+
                 # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
-            
+
             else:   # valid token placement
                 if self.player == 'white':
                     self.player = 'black'
                 else:
                     self.player = 'white'
-                self.state.append('capture') 
+                self.state.append('capture')
                 self.state.append('update')
                 self.state.append('check_win')
-        
+
             self.state.append('wait')
-        
+
         else:
             self.state.append('wait')
 
@@ -105,7 +105,7 @@ class Game:
 
     def _update(self):
         print(self.state) #TODO remove me
-        self.board.update_board()
+        self.board.update_board(self.white_score, self.black_score)
         pygame.display.update()
 
     def _check_win(self):
@@ -124,23 +124,23 @@ class Game:
             return
 
         # return the originator's old state
-        recall = self.originator.current_state()        
+        recall = self.originator.current_state()
 
         # update the game values
         self.white_score = recall['white_score']
         self.black_score = recall['black_score']
         self.board.set_board(recall['board'])
         self.state = recall['state_queue']
-        self.player = recall['player'] 
-        
+        self.player = recall['player']
+
         self.state.insert(0, 'update')
-    
+
     def _save_game(self):
         self.caretaker.show_history()
         self.caretaker.write_file()
 
     def go(self):
-        self.board.update_board()
+        self.board.update_board(self.white_score, self.black_score)
         while True:
             next_state = self.state.pop(0)
             if next_state == 'wait':

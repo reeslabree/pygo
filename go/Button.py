@@ -6,7 +6,7 @@ class Button:
         self.font = pygame.font.SysFont('Arial', font)
         self.set_text(text, bg)
         self.win = win
-    
+
     # set the text in the button s.t. the button is the size of the text
     def set_text(self, text, bg='white'):
         self.text = self.font.render(text, 1, pygame.Color('Black'))
