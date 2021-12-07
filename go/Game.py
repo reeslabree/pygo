@@ -1,16 +1,19 @@
-import pygame, sys
+import pygame, sys, copy
+from copy import deepcopy
 from .Board import Board
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
-from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE
+from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .Button import Button
-
+from .Memento import Memento, Caretaker, ConcreteMemento, Originator
 
 class Game:
     def __init__(self,
                  dimension,
                  starting_player,
                  starting_white,
-                 starting_black) -> object:
+                 starting_black,
+                 should_load=False) -> object:
+ 
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
@@ -21,6 +24,27 @@ class Game:
         self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
+
+        # memento implementation
+        self.originator = Originator(self._get_memento_state())
+        self.caretaker = Caretaker(self.originator)
+        if not should_load:
+            self.caretaker.backup()
+        else:
+            self.caretaker.read_file()
+            self.state.append('undo')
+
+    # gathers the current status of the Game object and packs into a dictionary
+    # this dictionary serves as a 'memento state', not to be confused with a 'state machine state'
+    def _get_memento_state(self):
+        mem_state = {
+                'white_score': self.white_score,
+                'black_score': self.black_score,
+                'board': deepcopy(self.board.get_board()),
+                'state_queue': self.state,
+                'player': self.player
+                }
+        return mem_state
 
     def _wait(self):
         event = pygame.event.poll()
@@ -41,21 +65,36 @@ class Game:
                     print('resign')
                     self.state.append('quit')
                 elif click == BUTTON_SAVE:
-                    print('save')
-            elif self.board.place(pos, self.player) == False:
-                # aler that there was an invalid placement
+                    self.state.append('save')
+                    self.state.append('wait')
+                elif click == BUTTON_UNDO:
+                    self.state.append('undo')
+                    self.state.append('wait')
+                    print('undo')
+                    return
+            self.caretaker.backup()
+            if self.board.place(pos, self.player) == False:
+                #if fail, pop the backup
+                self.caretaker.undo()
+                
+                # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
-            else:
+            
+            else:   # valid token placement
                 if self.player == 'white':
                     self.player = 'black'
                 else:
                     self.player = 'white'
                 self.state.append('capture') 
-            self.state.append('update')
-            self.state.append('check_win')
+                self.state.append('update')
+                self.state.append('check_win')
+        
             self.state.append('wait')
+        
         else:
             self.state.append('wait')
+
+        self.originator.update_state(self._get_memento_state())
 
     def _capture(self):
         score = self.board.try_capture(self.player)
@@ -65,13 +104,40 @@ class Game:
             self.white_score += score
 
     def _update(self):
+        print(self.state) #TODO remove me
         self.board.update_board()
         pygame.display.update()
+
     def _check_win(self):
         winner = self.board.check_win()
 
         if winner != None:
             print(winner)
+
+    def _save_mem(self):
+        self.caretaker.backup()
+        self.caretaker.show_history()   # using this for testing
+
+    def _undo(self):
+        # tell the caretaker to pop the last saved state and save it to the originator
+        if not self.caretaker.undo():
+            return
+
+        # return the originator's old state
+        recall = self.originator.current_state()        
+
+        # update the game values
+        self.white_score = recall['white_score']
+        self.black_score = recall['black_score']
+        self.board.set_board(recall['board'])
+        self.state = recall['state_queue']
+        self.player = recall['player'] 
+        
+        self.state.insert(0, 'update')
+    
+    def _save_game(self):
+        self.caretaker.show_history()
+        self.caretaker.write_file()
 
     def go(self):
         self.board.update_board()
@@ -90,8 +156,14 @@ class Game:
                 self._capture()
 
             elif next_state == 'save':
-                # self.save_game()
+                self._save_game()
                 print('save game')
+
+            elif next_state == 'save_mem':
+                self._save_mem()
+
+            elif next_state == 'undo':
+                self._undo()
 
             elif next_state == 'quit':
                 exit()
