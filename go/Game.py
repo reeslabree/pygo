@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, copy
 from copy import deepcopy
 from .Board import Board
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
@@ -26,14 +26,15 @@ class Game:
         # memento implementation
         self.originator = Originator(self._get_memento_state())
         self.caretaker = Caretaker(self.originator)
-    
+        self.caretaker.backup()
+
     # gathers the current status of the Game object and packs into a dictionary
     # this dictionary serves as a 'memento state', not to be confused with a 'state machine state'
     def _get_memento_state(self):
         mem_state = {
                 'white_score': self.white_score,
                 'black_score': self.black_score,
-                'board': deepcopy(self.board),
+                'board': deepcopy(self.board.get_board()),
                 'state_queue': self.state,
                 'player': self.player
                 }
@@ -61,20 +62,28 @@ class Game:
                     print('save')
                 elif click == BUTTON_UNDO:
                     self.state.append('undo')
+                    self.state.append('wait')
                     print('undo')
-            elif self.board.place(pos, self.player) == False:
-                # aler that there was an invalid placement
+                    return
+            self.caretaker.backup()
+            if self.board.place(pos, self.player) == False:
+                #if fail, pop the backup
+                self.caretaker.undo()
+                
+                # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
-            else:
+            
+            else:   # valid token placement
                 if self.player == 'white':
                     self.player = 'black'
                 else:
                     self.player = 'white'
                 self.state.append('capture') 
-            self.state.append('update')
-            self.state.append('check_win')
-            self.state.append('save_mem')
+                self.state.append('update')
+                self.state.append('check_win')
+        
             self.state.append('wait')
+        
         else:
             self.state.append('wait')
 
@@ -88,6 +97,7 @@ class Game:
             self.white_score += score
 
     def _update(self):
+        print(self.state) #TODO remove me
         self.board.update_board()
         pygame.display.update()
 
@@ -103,22 +113,21 @@ class Game:
 
     def _undo(self):
         # tell the caretaker to pop the last saved state and save it to the originator
-        self.caretaker.undo()
+        if not self.caretaker.undo():
+            return
 
         # return the originator's old state
         recall = self.originator.current_state()        
-        print(recall)
 
         # update the game values
         self.white_score = recall['white_score']
         self.black_score = recall['black_score']
-        self.board = recall['board']
+        self.board.set_board(recall['board'])
         self.state = recall['state_queue']
-        self.player = recall['player']
-         
-        # update the board
+        self.player = recall['player'] 
+        
         self.state.insert(0, 'update')
-
+    
     def go(self):
         self.board.update_board()
         while True:

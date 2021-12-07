@@ -33,6 +33,19 @@ class Board:
 
         self._draw_grid()
 
+    def get_board(self):
+        ret = {
+            'dimension': self.dimension,
+            'white_pieces': self.white_pieces,
+            'black_pieces': self.black_pieces,
+                }
+        return ret
+
+    def set_board(self, recall):
+        self.dimension = recall['dimension']
+        self.white_pieces = recall['white_pieces']
+        self.black_pieces = recall['black_pieces']
+
     def check_button_click(self, pos):
         if self.button_pass.click(pos):
             return BUTTON_PASS

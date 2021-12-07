@@ -58,11 +58,14 @@ class Caretaker():
         self._originator = originator
 
     def backup(self) -> None:
+        print('made backup') #TODO remove me
         self._mementos.append(self._originator.save_memento())
 
-    def undo(self) -> None:
+    def undo(self) -> bool:
         if not len(self._mementos):
-            return
+            return False
+
+        print('popped backup') #TODO remove me
 
         memento = self._mementos.pop()
         print(f'Restoring state to: {memento.get_name()}')
@@ -70,8 +73,16 @@ class Caretaker():
         try:
             self._originator.restore(memento)
         except Exception:
+            print('encountered exception')
             self.undo()
+
+        return True
 
     def show_history(self) -> None:
         for memento in self._mementos:
             print(memento.get_name())
+
+    def show_detailed_history(self) -> None:
+        for memento in self._mementos:
+            print(memento.get_name())
+            print(memento._state)
