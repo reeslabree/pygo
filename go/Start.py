@@ -2,11 +2,10 @@ import pygame
 from go.constants import WIN_DIM_X, WIN_DIM_Y
 from go.Menu import Menu
 
-
-#######################################################################################################################
+####
 # STATE/Game Loop Pattern:  https://gameprogrammingpatterns.com/game-loop.html
 #                           https://java-design-patterns.com/patterns/game-loop/
-#######################################################################################################################
+###
 class StartGame:
     def __init__(self) -> object:
         pygame.init()

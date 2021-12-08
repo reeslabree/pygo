@@ -1,4 +1,4 @@
-import pygame_menu
+import pygame_menu, pickle
 from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
 from .Game import *
@@ -11,15 +11,14 @@ from .Score import *
 #   https://github.com/ppizarror/pygame-menu/blob/master/pygame_menu/examples/game_selector.py
 #   USES STATE/GAME LOOP PATTERN:  https://gameprogrammingpatterns.com/game-loop.html
 
-
-########################################################################################################################
+###
 # Menu class - Establish board size (difficulty) and player names.
-########################################################################################################################
+###
 class Menu:
     def __init__(self, game: object) -> None:
-        ################################################################################################################
+        ###
         # Defaults
-        ################################################################################################################
+        ###
         self.DISPLAY_W, self.DISPLAY_H = WIN_DIM_X, WIN_DIM_Y
         self.surface = create_example_window('Game of Go', (self.DISPLAY_W, self.DISPLAY_H))
         self.DIFFICULTY = ['EASY']
@@ -28,9 +27,9 @@ class Menu:
         self.strategy = False
         self.ABOUT = ['Created for CSCI4448 using PyGame.',
                       'Authors:', 'Jon Wick', 'Rees Labree', 'Austin Cha']
-        ################################################################################################################
+        ###
         # Play Menu
-        ################################################################################################################
+        ###
         self.play_menu = pygame_menu.Menu(
             height=self.DISPLAY_H,
             width=self.DISPLAY_W,
@@ -57,9 +56,9 @@ class Menu:
                                     selector_id='prisoners_toggle')
         self.play_menu.add.button('Return to Main Menu', pygame_menu.events.BACK)
 
-        ################################################################################################################
+        ###
         # About Menu
-        ################################################################################################################
+        ###
         self.about_theme = pygame_menu.themes.THEME_DEFAULT.copy()
         self.about_theme.widget_margin = (50, 0)
         self.about_menu = pygame_menu.Menu(
@@ -79,9 +78,9 @@ class Menu:
         self.about_menu.add.vertical_margin(30)
         self.about_menu.add.button('Return to menu', pygame_menu.events.BACK)
 
-        ################################################################################################################
+        ###
         # Main Menu
-        ################################################################################################################
+        ###
         self.main_menu = pygame_menu.Menu(
             height=self.DISPLAY_H * 0.6,
             width=self.DISPLAY_W * 0.6,
@@ -93,37 +92,33 @@ class Menu:
         self.main_menu.add.button('About', self.about_menu)
         self.main_menu.add.button('Quit', pygame_menu.events.EXIT)
 
-    ####################################################################################################################
+    ###
     # Function that toggles between 3 difficulty settings.
-    ####################################################################################################################
+    ###
     def change_difficulty(self, value: Tuple[Any, int], difficulty: str) -> None:
         selected, index = value
         print(f'Selected difficulty: "{selected}" ({difficulty}) at index {index}')
         self.DIFFICULTY[0] = difficulty
 
-    ####################################################################################################################
     # Function that toggles between 3 difficulty settings.
-    ####################################################################################################################
     def change_prisoners(self, value: Tuple[Any, int], prisoners: bool) -> None:
         selected, index = value
         print(f'Toggle Prisoners: "{selected}" ({prisoners}) at index {index}')
         self.strategy = prisoners
 
-    ####################################################################################################################
     # Sets background color for main window.
-    ####################################################################################################################
     def main_background(self) -> None:
         self.surface.fill((128, 128, 128))
 
-    ####################################################################################################################
     # Load Game
-    ####################################################################################################################
     def load_the_game(self) -> None:
-        Game(9, 'black', None, None, should_load=True).go()
+        with open('.savefile', 'rb') as handle:
+            memento = pickle.load(handle)
+        board = memento.get_state()['board']
+        dim = board['dimension']
+        Game(dim, 'black', None, None, False, should_load=True).go()
 
-    ####################################################################################################################
     # Start game - pass settings to Game loop
-    ####################################################################################################################
     def start_the_game(self) -> None:
         diff = self.DIFFICULTY[0]
         strategy = self.strategy
