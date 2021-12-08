@@ -4,7 +4,7 @@ from collections import namedtuple
 from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
 from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .Button import Button
-from .Score import Score
+from .Score import *
 
 
 #############################################################################
@@ -13,7 +13,7 @@ from .Score import Score
 #############################################################################
 class Board:
     # constructor
-    def __init__(self, window, dimension, white_start, black_start):
+    def __init__(self, window, dimension, white_start, black_start, strategy):
         self.dimension = dimension  # dimension of the board
         if white_start is None:
             self.white_pieces = []  # tuples of positions of the white pieces
@@ -36,7 +36,11 @@ class Board:
         pos_undo = ((WIN_DIM_X - 400), (3.375 * (WIN_DIM_Y / 8)))
         self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
         self._draw_grid()
-        self.scoreboard = Score(dimension)
+        self.scoreboard = Score(dimension, ScoreTerritory())
+        # Toggle counting prisoners
+        self.strategy = strategy
+        if self.strategy:
+            self.scoreboard.strategy = ScoreCaptured()
         self.blackScore = 0
         self.whiteScore = 0
 
@@ -94,10 +98,7 @@ class Board:
 
     # check if there is a winner
     def score_game(self):
-        stuff = self.scoreboard.territories()
-        score = []
-        for k, v in stuff.items():
-            score.append(len(v))
+        score = self.scoreboard.territories()
         self.blackScore = score[1]
         self.whiteScore = score[0]
 
@@ -159,31 +160,27 @@ class Board:
         return to_capture
 
     # check if any of the players pieces should be captured
-    def try_capture(self, player):
+    def try_capture(self, player) -> None:
         score = 0
         if player == 'white':
             copy = self.white_pieces.copy()
             while len(copy) > 0:
                 try_piece = copy.pop()
                 kill = self._is_captured('white', try_piece[0], try_piece[1])
-                if kill != None:
+                if kill is not None:
                     for piece in kill:
                         self.white_pieces.remove(piece)
                         self.scoreboard.update(' ', int(piece[0]), int(piece[1]))
-                    score += len(kill)
 
         elif player == 'black':
             copy = self.black_pieces.copy()
             while len(copy) > 0:
                 try_piece = copy.pop()
                 kill = self._is_captured('black', int(try_piece[0]), int(try_piece[1]))
-                if kill != None:
+                if kill is not None:
                     for piece in kill:
                         self.black_pieces.remove(piece)
                         self.scoreboard.update(' ', int(piece[0]), int(piece[1]))
-                    score += len(kill)
-
-        return score
 
     # place a piece adds a piece to the board
     # returns 'True' if the placement is valid
