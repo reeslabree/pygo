@@ -1,9 +1,12 @@
 import pygame
-import pygame_menu
-from go.constants import WIN_DIM_X, WIN_DIM_Y 
+from go.constants import WIN_DIM_X, WIN_DIM_Y
 from go.Menu import Menu
 
 
+#######################################################################################################################
+# STATE/Game Loop Pattern:  https://gameprogrammingpatterns.com/game-loop.html
+#                           https://java-design-patterns.com/patterns/game-loop/
+#######################################################################################################################
 class StartGame:
     def __init__(self) -> object:
         pygame.init()
@@ -14,8 +17,6 @@ class StartGame:
         self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.menu = Menu(self)
-        # self.options = OptionsMenu(self)  #TODO
-        # self.credits = CreditsMenu(self)  #TODO
         self.curr_menu = self.menu
 
     #
@@ -36,4 +37,3 @@ class StartGame:
                 self.menu.main_menu.mainloop(self.menu.surface, self.menu.main_background)
             # Flip surface
             pygame.display.flip()
-

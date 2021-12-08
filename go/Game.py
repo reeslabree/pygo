@@ -1,11 +1,18 @@
-import pygame, sys, copy
-import time
 from copy import deepcopy
+
+import pygame
+
 from .Board import Board
-from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
+from .Memento import Caretaker, Originator
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
-from .Button import Button
-from .Memento import Memento, Caretaker, ConcreteMemento, Originator
+from .constants import WIN_DIM_X, WIN_DIM_Y, WHITE
+
+
+########################################################################################################################
+# State Pattern used for transition of game states.
+# Reference: https://refactoring.guru/design-patterns/state/python/example
+########################################################################################################################
+
 
 class Game:
     def __init__(self,
@@ -20,7 +27,6 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.pass_flag = False
-
         self.white_score = 0
         self.black_score = 0
         self.board = Board(self.window, dimension, starting_white, starting_black)
@@ -61,7 +67,7 @@ class Game:
                 if click == BUTTON_PASS:
                     print('pass')
                     if self.pass_flag:
-                        self.state = ['end', 'wait'] 
+                        self.state = ['end', 'wait']
                     else:
                         self.pass_flag = True
                     if self.player == 'black':
@@ -80,8 +86,8 @@ class Game:
                     print('undo')
                     return
             self.caretaker.backup()
-            if self.board.place(pos, self.player) == False:
-                #if fail, pop the backup
+            if not self.board.place(pos, self.player):
+                # if fail, pop the backup
                 self.caretaker.undo()
 
                 # alert that there was an invalid placement
@@ -97,7 +103,7 @@ class Game:
                 self.state.append('capture')
                 self.state.append('check_win')
                 self.state.append('update')
-                
+
             self.state.append('wait')
 
         else:
@@ -113,7 +119,6 @@ class Game:
             self.white_score += score
 
     def _update(self):
-        print(self.state) #TODO remove me
         self.board.update_board(self.white_score, self.black_score)
         pygame.display.update()
 
@@ -189,7 +194,7 @@ class Game:
 
             elif next_state == 'end':
                 self._display_winner()
-            
+
             elif next_state == 'quit':
                 exit()
                 break

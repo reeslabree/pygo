@@ -1,5 +1,6 @@
 import pygame
 
+
 class Button:
     def __init__(self, text, pos, win, font, bg='black', feedback=''):
         self.x, self.y = pos
@@ -14,7 +15,7 @@ class Button:
         self.surface = pygame.Surface(self.size)
         self.surface.fill(bg)
         self.surface.blit(self.text, (0, 0))
-        self.rect = pygame.Rect(self.x, self.y, self.size[0]*1.2, self.size[1]*1.2)
+        self.rect = pygame.Rect(self.x, self.y, self.size[0] * 1.2, self.size[1] * 1.2)
 
     # display the button
     def show(self):
