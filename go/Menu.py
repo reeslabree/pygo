@@ -34,8 +34,8 @@ class Menu:
             width=self.DISPLAY_W,
             title='Play Menu'
         )
-        self.player1 = self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
-        self.player2 = self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
+        #self.player1 = self.play_menu.add.text_input('Player 1 (Black): ', default='Player 1')
+        #self.player2 = self.play_menu.add.text_input('Player 2 (White): ', default='Player 2')
         self.play_menu.add.button('Start',  # When pressing return -> play(DIFFICULTY[0], font)
                                   self.start_the_game,
                                   # self.DIFFICULTY,

@@ -169,7 +169,7 @@ class Board:
                 if kill != None:
                     for piece in kill:
                         self.white_pieces.remove(piece)
-                        self.scoreboard.update(' ', piece[0], piece[1])
+                        self.scoreboard.update(' ', int(piece[0]), int(piece[1]))
                     score += len(kill)
 
         elif player == 'black':
