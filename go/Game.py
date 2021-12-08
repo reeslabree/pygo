@@ -1,11 +1,12 @@
-import pygame, sys, copy
-import time
 from copy import deepcopy
+
+import pygame
+
 from .Board import Board
-from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
+from .Memento import Caretaker, Originator
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
-from .Button import Button
-from .Memento import Memento, Caretaker, ConcreteMemento, Originator
+from .constants import WIN_DIM_X, WIN_DIM_Y, WHITE
+
 
 ########################################################################################################################
 # State Pattern used for transition of game states.
@@ -26,7 +27,6 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.pass_flag = False
-
         self.white_score = 0
         self.black_score = 0
         self.board = Board(self.window, dimension, starting_white, starting_black)
@@ -86,7 +86,7 @@ class Game:
                     print('undo')
                     return
             self.caretaker.backup()
-            if self.board.place(pos, self.player) == False:
+            if not self.board.place(pos, self.player):
                 # if fail, pop the backup
                 self.caretaker.undo()
 

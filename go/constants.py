@@ -15,3 +15,7 @@ BUTTON_PASS     = 1
 BUTTON_RESIGN   = 2
 BUTTON_SAVE     = 3
 BUTTON_UNDO     = 4
+
+WH = 'W'
+BL = 'B'
+NO = ' '
