@@ -78,8 +78,8 @@ class Game:
                         self.player = 'white'
                     else:
                         self.player = 'black'
-                    self.state.append('update')
-                    self.state.append('wait')
+                        self.state.append('update')
+                        self.state.append('wait')
                     return
                 elif click == BUTTON_RESIGN:
                     print('resign')

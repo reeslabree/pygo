@@ -28,19 +28,16 @@ class ConcretePublisher(Publisher):
     _observers: List[Observer] = []
     
     def attach(self, observer: Observer) -> None:
-        print("Subject: Attached an observer.")
         self._observers.append(observer)
 
     def detach(self, observer: Observer) -> None:
         self._observers.remove(observer)
  
     def notify(self) -> None:
-        print("Subject: Notifying observers...")
         for observer in self._observers:
             observer.update(self)
 
     def update(self, player:str, message:str) -> None: 
-        print(player, ' ', message)
         self._message = message
         self._turn = player
         self.notify()
@@ -59,9 +56,7 @@ class Observer(ABC):
 class MessageObserver(Observer):
     def update(self, subject: Publisher) -> None: 
         self.message = subject._message
-        print('message obs: ', self.message) 
 
 class PlayerObserver(Observer):
     def update(self, subject: Publisher) -> None:
         self.message = subject._turn
-        print('player obs: ', self.message)
