@@ -1,9 +1,12 @@
 ## CSCI 4448 Final Project - Go
 ### Group Members
 Austin Cha \
-Rees Labree \
+Rees LaBree \
 Jonathan Wick 
 
 ### To Start Game:
-    Run main.py
+    python3 main.py
 
+### Dependencies:
+    pip install pygame
+    pip install pygame-menu
