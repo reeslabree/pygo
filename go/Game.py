@@ -6,14 +6,8 @@ from .Board import Board
 from .Memento import Caretaker, Originator
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .constants import WIN_DIM_X, WIN_DIM_Y, WHITE
+from .Observer import Publisher, ConcretePublisher, MessageObserver, PlayerObserver
 from .Score import *
-
-
-########################################################################################################################
-# State Pattern used for transition of game states.
-# Reference: https://refactoring.guru/design-patterns/state/python/example
-########################################################################################################################
-
 
 class Game:
     def __init__(self,
@@ -34,6 +28,14 @@ class Game:
         self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
+
+        # publishers and observers
+        self.publisher = ConcretePublisher()
+        self.player_observer = PlayerObserver()
+        self.message_observer = MessageObserver()
+        self.publisher.attach(self.player_observer)
+        self.publisher.attach(self.message_observer)
+        self.publisher.update(self.player, '')
 
         # memento implementation
         self.originator = Originator(self._get_memento_state())
@@ -67,6 +69,7 @@ class Game:
             if click != BUTTON_NULL:
                 if click == BUTTON_PASS:
                     print('pass')
+                    self.publisher.update(self.player, (self.player + ' passed'))
                     if self.pass_flag:
                         self.state = ['end', 'wait']
                     else:
@@ -75,6 +78,9 @@ class Game:
                         self.player = 'white'
                     else:
                         self.player = 'black'
+                    self.state.append('update')
+                    self.state.append('wait')
+                    return
                 elif click == BUTTON_RESIGN:
                     print('resign')
                     self.state.append('quit')
@@ -92,7 +98,8 @@ class Game:
                 self.caretaker.undo()
 
                 # alert that there was an invalid placement
-                print('invalid placement')  # TODO: make this do a pop up or something
+                self.publisher.update(self.player, 'Invalid Placement')
+                self.state.append('update')
 
             else:
                 # valid token placement
@@ -101,6 +108,8 @@ class Game:
                     self.player = 'black'
                 else:
                     self.player = 'white'
+
+                self.publisher.update(self.player, '')
                 self.state.append('capture')
                 self.state.append('check_win')
                 self.state.append('update')
@@ -117,6 +126,7 @@ class Game:
 
     def _update(self):
         self.board.update_board(self.white_score, self.black_score)
+        self._display_messages()
         pygame.display.update()
 
     def _score(self):
@@ -163,6 +173,20 @@ class Game:
         self.window.blit(text_surface, center)
         pygame.display.update()
 
+    def _display_messages(self):
+        player_string = self.player_observer.get_message()
+        message_string = self.message_observer.get_message()
+        
+        if message_string == '':
+            text = player_string + "'s turn"
+        else:
+            text = message_string
+
+        font = pygame.font.SysFont('Arial', 40)
+        text_surface = font.render(text, False, (0,0,0))
+        pos = (3.65 * (WIN_DIM_X // 5), 1.5 * (WIN_DIM_Y // 5))
+        self.window.blit(text_surface, pos)
+       
     def go(self):
         self.board.update_board(self.white_score, self.black_score)
         while True:
