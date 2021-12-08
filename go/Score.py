@@ -1,39 +1,67 @@
 ########################################################################################################################
 # For Score keeping, reference used:  https://github.com/brilee/go_implementation/blob/master/go_naive.py
 #                                     https://exercism.org/tracks/python/exercises/go-counting/solutions/CFred
+# Strategy pattern:  https://www.tutorialspoint.com/python_design_patterns/python_design_patterns_strategy.htm
 ########################################################################################################################
 from .constants import BL, WH, NO
+from abc import ABC, abstractmethod
+import types
 import numpy as np
 
 
-class Score:
-    def __init__(self, dimension):
-        self.board = [[' '] * dimension for i in range(dimension)]
+########################################################################################################################
+# Default scoring for Go is only territories captured.  Strategy implements capture score keeping.
+# Implementing captured scoring with Strategy Pattern
+########################################################################################################################
+class Strategy(ABC):
+    @abstractmethod
+    def calculate_score(self, score, scores):
+        pass
 
-    def update(self, color, x, y):
+
+class Score:
+    def __init__(self, dimension, strategy: Strategy) -> None:
+        self.board = [[' '] * dimension for i in range(dimension)]
+        self.columns = len(self.board[0])
+        self.rows = len(self.board)
+        self.black_captured = 0
+        self.white_captured = 0
+        self._strategy = strategy
+
+    @property
+    def strategy(self) -> Strategy:
+        return self._strategy
+
+    @strategy.setter
+    def strategy(self, strategy: Strategy) -> None:
+            self._strategy = strategy
+
+    def update(self, color, x, y) -> None:
         if color is 'black':
             self.board[y - 1][x - 1] = BL
         elif color is 'white':
             self.board[y - 1][x - 1] = WH
         else:
+            if self.board[y - 1][x - 1] is BL:
+                self.black_captured += 1
+                # print("Black Captured: ", self.black_captured)
+            elif self.board[y - 1][x - 1] is WH:
+                self.white_captured += 1
+                # print("White Captured: ", self.white_captured)
             self.board[y - 1][x - 1] = NO
         # DEBUG
-        print(np.matrix(self.board))
-
-    @property
-    def columns(self):
-        return len(self.board[0])
-
-    @property
-    def rows(self):
-        return len(self.board)
+        # print(np.matrix(self.board))
 
     def valid_space(self, x, y):
         return 0 <= y < self.rows and 0 <= x < self.columns
 
     def space(self, x, y):
         return self.board[y][x]
-
+    ####################################################################################################################
+    # Algorithm implemented from:
+    #   https://exercism.org/tracks/python/exercises/go-counting/solutions/CFred
+    # And adapted to our score template
+    ####################################################################################################################
     def territory(self, x, y):
         def grow_territory(x1, y1):
             nonlocal territory
@@ -85,8 +113,7 @@ class Score:
             pass
         return owner, territory
 
-    def territories(self):
-        # Find the owners and the territories of the whole board
+    def territories(self) -> list:
         scores = {WH: set(), BL: set(), NO: set()}
         for x in range(self.columns):
             for y in range(self.rows):
@@ -94,4 +121,28 @@ class Score:
                     owner, terr = self.territory(x, y)
                     if owner and terr:
                         scores[owner] = scores[owner].union(terr)
-        return scores
+        return self._strategy.calculate_score(self, scores)
+
+
+class ScoreTerritory(Strategy):
+    # Only Score Territory
+    def calculate_score(self, score, scores) -> list:
+
+        final = []
+        for k, v in scores.items():
+            final.append(len(v))
+
+        return final
+
+
+class ScoreCaptured(Strategy):
+    # Score Territory AND Prisoners
+    def calculate_score(self, score, scores) -> list:
+
+        final = []
+        for k, v in scores.items():
+            final.append(len(v))
+        final[0] += score.black_captured
+        final[1] += score.white_captured
+
+        return final

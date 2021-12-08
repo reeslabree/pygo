@@ -3,6 +3,7 @@ from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
 from .Game import *
 from .constants import WIN_DIM_X, WIN_DIM_Y
+from .Score import *
 
 
 # Notes:
@@ -24,6 +25,7 @@ class Menu:
         self.DIFFICULTY = ['EASY']
         self.player1 = 'Player 1'
         self.player2 = 'Player 2'
+        self.strategy = False
         self.ABOUT = ['Created for CSCI4448 using PyGame.',
                       'Authors:', 'Jon Wick', 'Rees Labree', 'Austin Cha']
         ################################################################################################################
@@ -48,6 +50,11 @@ class Menu:
                                      ('3 - Hard', 'HARD')],
                                     onchange=self.change_difficulty,
                                     selector_id='select_difficulty')
+        self.play_menu.add.selector('Count Prisoners: ',
+                                    [('1 - off', False),
+                                     ('1 - on', True)],
+                                    onchange=self.change_prisoners,
+                                    selector_id='prisoners_toggle')
         self.play_menu.add.button('Return to Main Menu', pygame_menu.events.BACK)
 
         ################################################################################################################
@@ -95,6 +102,14 @@ class Menu:
         self.DIFFICULTY[0] = difficulty
 
     ####################################################################################################################
+    # Function that toggles between 3 difficulty settings.
+    ####################################################################################################################
+    def change_prisoners(self, value: Tuple[Any, int], prisoners: bool) -> None:
+        selected, index = value
+        print(f'Toggle Prisoners: "{selected}" ({prisoners}) at index {index}')
+        self.strategy = prisoners
+
+    ####################################################################################################################
     # Sets background color for main window.
     ####################################################################################################################
     def main_background(self) -> None:
@@ -111,6 +126,7 @@ class Menu:
     ####################################################################################################################
     def start_the_game(self) -> None:
         diff = self.DIFFICULTY[0]
+        strategy = self.strategy
 
         if diff == 'EASY':
             d = 9
@@ -121,4 +137,4 @@ class Menu:
         else:
             raise ValueError(f'unknown difficulty {diff}')
 
-        Game(d, 'black', None, None).go()
+        Game(d, 'black', None, None, strategy).go()

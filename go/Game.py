@@ -6,6 +6,7 @@ from .Board import Board
 from .Memento import Caretaker, Originator
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .constants import WIN_DIM_X, WIN_DIM_Y, WHITE
+from .Score import *
 
 
 ########################################################################################################################
@@ -20,16 +21,16 @@ class Game:
                  starting_player,
                  starting_white,
                  starting_black,
+                 strategy,
                  should_load=False) -> object:
 
         pygame.init()
         self.window = pygame.display.set_mode((WIN_DIM_X, WIN_DIM_Y))
         self.clock = pygame.time.Clock()
-
         self.pass_flag = False
         self.white_score = 0
         self.black_score = 0
-        self.board = Board(self.window, dimension, starting_white, starting_black)
+        self.board = Board(self.window, dimension, starting_white, starting_black, strategy)
         self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
@@ -112,11 +113,7 @@ class Game:
         self.originator.update_state(self._get_memento_state())
 
     def _capture(self):
-        score = self.board.try_capture(self.player)
-        if self.player == 'white':
-            self.black_score += score
-        else:
-            self.white_score += score
+        self.board.try_capture(self.player)
 
     def _update(self):
         self.board.update_board(self.white_score, self.black_score)
