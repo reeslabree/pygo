@@ -1,4 +1,4 @@
-## CSCI 4448 Final Project - Go
+## CSCI 4448 Project 7 - PyGo
 ### Group Members
 Austin Cha \
 Rees LaBree \
