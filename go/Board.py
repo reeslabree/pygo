@@ -13,7 +13,7 @@ from .Score import *
 #############################################################################
 class Board:
     # constructor
-    def __init__(self, window, dimension, white_start, black_start):
+    def __init__(self, window, dimension, white_start, black_start, strategy):
         self.dimension = dimension  # dimension of the board
         if white_start is None:
             self.white_pieces = []  # tuples of positions of the white pieces
@@ -36,8 +36,11 @@ class Board:
         pos_undo = ((WIN_DIM_X - 400), (3.375 * (WIN_DIM_Y / 8)))
         self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
         self._draw_grid()
-        self.scoreboard = Score(dimension)
-        self.scoreboard.strategy = ScoreCaptured()
+        self.scoreboard = Score(dimension, ScoreTerritory())
+        # Toggle counting prisoners
+        self.strategy = strategy
+        if self.strategy:
+            self.scoreboard.strategy = ScoreCaptured()
         self.blackScore = 0
         self.whiteScore = 0
 
@@ -95,7 +98,7 @@ class Board:
 
     # check if there is a winner
     def score_game(self):
-        score = self.scoreboard.calculate_score()
+        score = self.scoreboard.territories()
         self.blackScore = score[1]
         self.whiteScore = score[0]
 
@@ -178,8 +181,6 @@ class Board:
                     for piece in kill:
                         self.black_pieces.remove(piece)
                         self.scoreboard.update(' ', int(piece[0]), int(piece[1]))
-
-
 
     # place a piece adds a piece to the board
     # returns 'True' if the placement is valid

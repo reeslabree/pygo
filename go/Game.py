@@ -30,7 +30,7 @@ class Game:
         self.pass_flag = False
         self.white_score = 0
         self.black_score = 0
-        self.board = Board(self.window, dimension, starting_white, starting_black)
+        self.board = Board(self.window, dimension, starting_white, starting_black, strategy)
         self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)

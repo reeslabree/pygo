@@ -11,22 +11,22 @@ import numpy as np
 
 ########################################################################################################################
 # Default scoring for Go is only territories captured.  Strategy implements capture score keeping.
-# Implementing captured scoring with strategy pattern
+# Implementing captured scoring with Strategy Pattern
 ########################################################################################################################
 class Strategy(ABC):
     @abstractmethod
-    def calculate_score(self):
+    def calculate_score(self, score, scores):
         pass
 
 
 class Score:
-    def __init__(self, dimension) -> None:
+    def __init__(self, dimension, strategy: Strategy) -> None:
         self.board = [[' '] * dimension for i in range(dimension)]
         self.columns = len(self.board[0])
         self.rows = len(self.board)
         self.black_captured = 0
         self.white_captured = 0
-        self._strategy = None
+        self._strategy = strategy
 
     @property
     def strategy(self) -> Strategy:
@@ -57,7 +57,11 @@ class Score:
 
     def space(self, x, y):
         return self.board[y][x]
-
+    ####################################################################################################################
+    # Algorithm implemented from:
+    #   https://exercism.org/tracks/python/exercises/go-counting/solutions/CFred
+    # And adapted to our score template
+    ####################################################################################################################
     def territory(self, x, y):
         def grow_territory(x1, y1):
             nonlocal territory
@@ -109,8 +113,7 @@ class Score:
             pass
         return owner, territory
 
-    def calculate_score(self) -> list:
-        # Find the owners and the territories of the whole board
+    def territories(self) -> list:
         scores = {WH: set(), BL: set(), NO: set()}
         for x in range(self.columns):
             for y in range(self.rows):
@@ -118,27 +121,28 @@ class Score:
                     owner, terr = self.territory(x, y)
                     if owner and terr:
                         scores[owner] = scores[owner].union(terr)
-        score = []
-        for k, v in scores.items():
-            score.append(len(v))
+        return self._strategy.calculate_score(self, scores)
 
-        return score
+
+class ScoreTerritory(Strategy):
+    # Only Score Territory
+    def calculate_score(self, score, scores) -> list:
+
+        final = []
+        for k, v in scores.items():
+            final.append(len(v))
+
+        return final
 
 
 class ScoreCaptured(Strategy):
-    # Find the owners and the territories of the whole board
-    def calculate_score(self) -> list:
-        scores = {WH: set(), BL: set(), NO: set()}
-        for x in range(self.columns):
-            for y in range(self.rows):
-                if self.space(x, y) == NO and (x, y) not in set().union(*scores.values()):
-                    owner, terr = self.territory(x, y)
-                    if owner and terr:
-                        scores[owner] = scores[owner].union(terr)
-        score = []
-        for k, v in scores.items():
-            score.append(len(v))
-        score[0] += self.black_captured
-        score[1] += self.white_captured
+    # Score Territory AND Prisoners
+    def calculate_score(self, score, scores) -> list:
 
-        return score
+        final = []
+        for k, v in scores.items():
+            final.append(len(v))
+        final[0] += score.black_captured
+        final[1] += score.white_captured
+
+        return final
