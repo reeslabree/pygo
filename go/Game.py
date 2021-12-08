@@ -1,11 +1,12 @@
 import pygame, sys, copy
 import time
 from copy import deepcopy
-from .Board import Board
+from .Board import Board, UpdatedScoreDisplay
 from .constants import FPS, WIN_DIM_X, WIN_DIM_Y, WHITE
 from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .Button import Button
 from .Memento import Memento, Caretaker, ConcreteMemento, Originator
+from .Observer import Subject
 
 class Game:
     def __init__(self,
@@ -27,6 +28,8 @@ class Game:
         self.state = ['update', 'wait']  # queue of events
         self.player = starting_player
         self.window.fill(WHITE)
+
+        self.info = player_info()
 
         # memento implementation
         self.originator = Originator(self._get_memento_state())
@@ -61,7 +64,7 @@ class Game:
                 if click == BUTTON_PASS:
                     print('pass')
                     if self.pass_flag:
-                        self.state = ['end', 'wait'] 
+                        self.state = ['end', 'wait']
                     else:
                         self.pass_flag = True
                     if self.player == 'black':
@@ -97,7 +100,7 @@ class Game:
                 self.state.append('capture')
                 self.state.append('check_win')
                 self.state.append('update')
-                
+
             self.state.append('wait')
 
         else:
@@ -109,12 +112,16 @@ class Game:
         score = self.board.try_capture(self.player)
         if self.player == 'white':
             self.black_score += score
+            self.scoring()
+
         else:
             self.white_score += score
+            self.scoring()
 
     def _update(self):
         print(self.state) #TODO remove me
-        self.board.update_board(self.white_score, self.black_score)
+        self.board.update_board()
+        self.scoring()
         pygame.display.update()
 
     def _score(self):
@@ -161,8 +168,14 @@ class Game:
         self.window.blit(text_surface, center)
         pygame.display.update()
 
+    def scoring(self):
+        usd = UpdatedScoreDisplay(self.info, self.board)
+        self.info.set_scores(self.black_score, self.white_score, self.player)
+
     def go(self):
-        self.board.update_board(self.white_score, self.black_score)
+        self.board.update_board()
+        self.scoring()
+
         while True:
             next_state = self.state.pop(0)
             if next_state == 'wait':
@@ -189,7 +202,33 @@ class Game:
 
             elif next_state == 'end':
                 self._display_winner()
-            
+
             elif next_state == 'quit':
                 exit()
                 break
+
+class player_info(Subject):
+    def __init__(self):
+        self.black_score = None
+        self.white_score = None
+        self.player = None
+        self.observers = []
+
+    def register_observer(self, observer):
+        self.observers.append(observer)
+
+    def remove_observer(self, observer):
+        self.observers.remove(observer)
+
+    def notify_observers(self):
+        for observer in self.observers:
+            observer.update_score(self.white_score, self.black_score, self.player)
+
+    def score_changed(self):
+        self.notify_observers()
+
+    def set_scores(self, black_score, white_score, player):
+        self.black_score = None
+        self.white_score = None
+        self.player = None
+        self.score_changed()

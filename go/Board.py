@@ -2,6 +2,7 @@ import pygame
 from go.constants import TILE_B, TILE_W, BLACK, WHITE, WIN_DIM_X, WIN_DIM_Y
 from go.constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUTTON_UNDO
 from .Button import Button
+from .Observer import Observer, DisplayElement
 
 class Board:
     # constructor
@@ -30,7 +31,6 @@ class Board:
 
         pos_undo = ((WIN_DIM_X - 400), (3.375*(WIN_DIM_Y / 8)))
         self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
-
 
 
         self._draw_grid()
@@ -93,9 +93,9 @@ class Board:
 
 
     # clears the board, draw the pieces
-    def update_board(self, white, black):
+    def update_board(self):
         self._draw_grid()
-        self._show_score(1200,10,white, black)
+        # self._show_score(1200,10,white, black)
         for (x, y) in self.white_pieces:
             self._draw_piece(x, y, 'white')
         for (x, y) in self.black_pieces:
@@ -206,12 +206,29 @@ class Board:
 
         return True
 
-    def _show_score(self, x, y, white , black):
+class UpdatedScoreDisplay(Observer, DisplayElement):
+    def __init__(self, player_info, board):
+        self.board = board
+        self.player_info = player_info
+        self.player_info.register_observer(self)
+        self.white_score = 0
+        self.black_score = 0
+        self.turn = None
+
+    def update_score(self, w_score, b_score, player):
+        self.white_score = w_score
+        self.black_score = b_score
+        self.turn = player
+        self.display_score()
+
+    def display_score(self):
+        x = 1200
+        y = 10
         font = pygame.font.Font('freesansbold.ttf', 32)
         score = font.render("Score :", True, (0,0,0))
-        w = font.render("white: " + str(white), True, (0,0,0))
-        b = font.render("black: " + str(black), True, (0,0,0))
-        screen = self.win
+        w = font.render("white: " + str(self.white_score), True, (0,0,0))
+        b = font.render("black: " + str(self.black_score), True, (0,0,0))
+        screen = self.board.win
         screen.blit(score, (x,y))
         screen.blit(w, (x,y+32))
         screen.blit(b, (x,y+64))

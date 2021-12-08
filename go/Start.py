@@ -1,6 +1,6 @@
 import pygame
 import pygame_menu
-from go.constants import WIN_DIM_X, WIN_DIM_Y 
+from go.constants import WIN_DIM_X, WIN_DIM_Y
 from go.Menu import Menu
 
 
@@ -36,4 +36,3 @@ class StartGame:
                 self.menu.main_menu.mainloop(self.menu.surface, self.menu.main_background)
             # Flip surface
             pygame.display.flip()
-
