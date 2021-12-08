@@ -8,7 +8,7 @@ from .constants import WIN_DIM_X, WIN_DIM_Y
 # Notes:
 #   PYGAME_MENU EXAMPLE CODE USED FOR TEMPLATE MENU TO GET STARTED:
 #   https://github.com/ppizarror/pygame-menu/blob/master/pygame_menu/examples/game_selector.py
-#
+#   USES STATE/GAME LOOP PATTERN:  https://gameprogrammingpatterns.com/game-loop.html
 
 
 ########################################################################################################################

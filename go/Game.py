@@ -6,6 +6,12 @@ from .constants import BUTTON_NULL, BUTTON_PASS, BUTTON_RESIGN, BUTTON_SAVE, BUT
 from .Button import Button
 from .Memento import Memento, Caretaker, ConcreteMemento, Originator
 
+########################################################################################################################
+# State Pattern used for transition of game states.
+# Reference: https://refactoring.guru/design-patterns/state/python/example
+########################################################################################################################
+
+
 class Game:
     def __init__(self,
                  dimension,
@@ -38,12 +44,12 @@ class Game:
     # this dictionary serves as a 'memento state', not to be confused with a 'state machine state'
     def _get_memento_state(self):
         mem_state = {
-                'white_score': self.white_score,
-                'black_score': self.black_score,
-                'board': deepcopy(self.board.get_board()),
-                'state_queue': self.state,
-                'player': self.player
-                }
+            'white_score': self.white_score,
+            'black_score': self.black_score,
+            'board': deepcopy(self.board.get_board()),
+            'state_queue': self.state,
+            'player': self.player
+        }
         return mem_state
 
     def _wait(self):
@@ -74,13 +80,13 @@ class Game:
                     return
             self.caretaker.backup()
             if self.board.place(pos, self.player) == False:
-                #if fail, pop the backup
+                # if fail, pop the backup
                 self.caretaker.undo()
 
                 # alert that there was an invalid placement
                 print('invalid placement')  # TODO: make this do a pop up or something
 
-            else:   # valid token placement
+            else:  # valid token placement
                 if self.player == 'white':
                     self.player = 'black'
                 else:
@@ -104,7 +110,7 @@ class Game:
             self.white_score += score
 
     def _update(self):
-        print(self.state) #TODO remove me
+        print(self.state)  # TODO remove me
         self.board.update_board(self.white_score, self.black_score)
         pygame.display.update()
 
@@ -116,7 +122,7 @@ class Game:
 
     def _save_mem(self):
         self.caretaker.backup()
-        self.caretaker.show_history()   # using this for testing
+        self.caretaker.show_history()  # using this for testing
 
     def _undo(self):
         # tell the caretaker to pop the last saved state and save it to the originator

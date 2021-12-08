@@ -1,6 +1,9 @@
 # this is a hard pattern to implement in python
 # as such inspiration taken from our friend the refactoring guru
 # https://refactoring.guru/design-patterns/memento/python/example
+###########################################################################
+# MEMENTO PATTERN USED
+#
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
