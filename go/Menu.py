@@ -3,6 +3,7 @@ from typing import Tuple, Any
 from pygame_menu.examples import create_example_window
 from .Game import *
 from .constants import WIN_DIM_X, WIN_DIM_Y
+from .Score import *
 
 
 # Notes:
@@ -111,6 +112,7 @@ class Menu:
     ####################################################################################################################
     def start_the_game(self) -> None:
         diff = self.DIFFICULTY[0]
+        strategy = "territory"
 
         if diff == 'EASY':
             d = 9
@@ -121,4 +123,4 @@ class Menu:
         else:
             raise ValueError(f'unknown difficulty {diff}')
 
-        Game(d, 'black', None, None).go()
+        Game(d, 'black', None, None, strategy).go()
