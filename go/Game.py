@@ -190,6 +190,8 @@ class Game:
     def go(self):
         self.board.update_board(self.white_score, self.black_score)
         while True:
+            if len(self.state) == 0:
+                self.state.append('wait')
             next_state = self.state.pop(0)
             if next_state == 'wait':
                 self._wait()
