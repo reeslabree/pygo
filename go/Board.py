@@ -36,6 +36,7 @@ class Board:
         pos_undo = ((WIN_DIM_X - 400), (3.375 * (WIN_DIM_Y / 8)))
         self.button_undo = Button('Undo', pos_undo, self.win, 100, bg='white', feedback='undo')
         self._draw_grid()
+        
         self.scoreboard = Score(dimension, ScoreTerritory())
         # Toggle counting prisoners
         self.strategy = strategy
@@ -49,6 +50,8 @@ class Board:
             'dimension': self.dimension,
             'white_pieces': self.white_pieces,
             'black_pieces': self.black_pieces,
+            'scoreboard': self.scoreboard,
+            'strategy': self.strategy
         }
         return ret
 
@@ -56,6 +59,8 @@ class Board:
         self.dimension = recall['dimension']
         self.white_pieces = recall['white_pieces']
         self.black_pieces = recall['black_pieces']
+        self.scoreboard = recall['scoreboard']
+        self.strategy = recall['strategy']
 
     def check_button_click(self, pos):
         if self.button_pass.click(pos):
